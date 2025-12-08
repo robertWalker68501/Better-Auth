@@ -2,9 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { IoLogoGithub } from 'react-icons/io5';
+import { toast } from 'sonner';
 import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -24,6 +26,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { authClient } from '@/lib/auth-client';
 import SignUpFormSchema from '@/lib/form-schemas/signUpFormSchema';
 
 const SignUpForm = () => {
@@ -37,8 +40,31 @@ const SignUpForm = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof SignUpFormSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof SignUpFormSchema>) => {
+    await authClient.signUp.email(
+      {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        callbackURL: '/',
+      },
+      {
+        onRequest: (ctx) => {
+          // Show loading
+          console.log('onRequest', ctx);
+        },
+        onSuccess: (ctx) => {
+          //redirect to the dashboard or sign in page
+          console.log(ctx);
+          toast.success('Account created successfully');
+          redirect('/');
+        },
+        onError: (ctx) => {
+          // display the error message
+          toast.error(ctx.error.message);
+        },
+      }
+    );
   };
 
   return (
@@ -163,7 +189,7 @@ const SignUpForm = () => {
             </Button>
             <Button
               type='submit'
-              form='sign-in-form'
+              form='sign-up-form'
               className='bg-blue-400 hover:bg-blue-500'
             >
               Sign Up
