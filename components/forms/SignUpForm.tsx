@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { IoLogoGithub } from 'react-icons/io5';
@@ -30,6 +30,8 @@ import { authClient } from '@/lib/auth-client';
 import SignUpFormSchema from '@/lib/form-schemas/signUpFormSchema';
 
 const SignUpForm = () => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
@@ -49,18 +51,11 @@ const SignUpForm = () => {
         callbackURL: '/',
       },
       {
-        onRequest: (ctx) => {
-          // Show loading
-          console.log('onRequest', ctx);
-        },
-        onSuccess: (ctx) => {
-          //redirect to the dashboard or sign in page
-          console.log(ctx);
+        onSuccess: () => {
           toast.success('Account created successfully');
-          redirect('/');
+          router.push('/');
         },
         onError: (ctx) => {
-          // display the error message
           toast.error(ctx.error.message);
         },
       }
