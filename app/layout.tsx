@@ -3,6 +3,8 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 
+import { Toaster } from '@/components/ui/sonner';
+
 import './globals.css';
 
 const inter = Inter({
@@ -36,6 +38,10 @@ export default function RootLayout({
         className={`${inter.variable} ${poppins.variable} h-dvh w-dvw bg-linear-to-br from-blue-500 to-gray-200 antialiased`}
       >
         {children}
+        <Toaster
+          richColors
+          position='top-center'
+        />
       </body>
     </html>
   );
